@@ -1,0 +1,3 @@
+[submodule "monkeyHAL"]
+	path = monkeyHAL
+	url = git@github.com:purpleMonkey911/monkeyHAL.git
