@@ -23,6 +23,10 @@ void Uart_Init(void) {
     mHalUart_Init(&uart_inst, &uart_config);
 }
 
+void Uart_Deinit(void) {
+    mHalUart_Deinit(&uart_inst);
+}
+
 Uart Uart_GetInstance(void) {
     return uart_inst;
 }

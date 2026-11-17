@@ -19,9 +19,13 @@ void I2c_Init(void) {
     mHalI2c_Init(&i2c_inst, &config);
 }
 
+void I2c_Deinit(void) {
+    mHalI2c_Deinit(&i2c_inst);
+}
+
 /**
  * @brief Accessor function to get I2c instance
- */ 
+ */
 I2c I2c_GetInstance(void) {
     return i2c_inst;
 }

@@ -18,6 +18,11 @@
 extern void I2c_Init(void);
 
 /**
+ * @brief deinitialize I2c instance
+ */
+extern void I2c_Deinit(void);
+
+/**
  * @brief Accessor function to get I2c instance
  */ 
 extern I2c I2c_GetInstance(void);

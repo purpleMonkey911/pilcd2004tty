@@ -15,6 +15,10 @@ void Lcd_Init(Lcd2004Config* config) {
     Lcd2004_Init(&lcd_out, config);
 }
 
+void Lcd_Deinit(void) {
+    Lcd2004_Deinit(&lcd_out);
+}
+
 Lcd2004 Lcd_GetInstance(void) {
     return lcd_out;
 }

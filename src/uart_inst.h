@@ -18,6 +18,11 @@
 extern void Uart_Init(void);
 
 /**
+ * @brief deinitialize Uart instance
+ */
+extern void Uart_Deinit(void);
+
+/**
  * @brief Accessor function to get Uart instance
  */ 
 extern Uart Uart_GetInstance(void);

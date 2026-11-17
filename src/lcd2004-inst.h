@@ -18,6 +18,11 @@
 extern void Lcd_Init(Lcd2004Config* config);
 
 /**
+ * @brief deinitialize Lcd2004 instance
+ */
+extern void Lcd_Deinit(void);
+
+/**
  * @brief Accessor function to get Lcd2004 instance
  */ 
 extern Lcd2004 Lcd_GetInstance(void);
