@@ -185,6 +185,22 @@ Lcd2004Status Lcd2004_Init(Lcd2004* pLcd, Lcd2004Config* config) {
     return LCD2004_STATUS_OK;
 }
 
+Lcd2004Status Lcd2004_Deinit(Lcd2004* pLcd) {
+    if (!pLcd || !*pLcd) {
+        return LCD2004_STATUS_ERROR;
+    }
+    Lcd2004 lcd = *pLcd;
+
+    // don't leave the shared transfer descriptor pointing at freed memory
+    lcd2004i2c_xfer.done_cb_ctx  = NULL;
+    lcd2004i2c_xfer.error_cb_ctx = NULL;
+
+    RingBuffer_Destroy(&lcd->data_buffer);
+    free(lcd);
+    *pLcd = NULL;
+    return LCD2004_STATUS_OK;
+}
+
 Lcd2004Status Lcd2004_ClearScreen(Lcd2004 lcd) {
     if (!lcd) {
         return LCD2004_STATUS_ERROR;

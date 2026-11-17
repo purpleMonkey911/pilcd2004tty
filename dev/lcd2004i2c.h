@@ -47,6 +47,18 @@ typedef struct {
 extern Lcd2004Status Lcd2004_Init(Lcd2004* pLcd, Lcd2004Config* config);
 
 /**
+ * @brief Deinitialize Lcd2004 instance and free its resources
+ *
+ * @param pLcd   pointer to Lcd2004 instance (set to NULL on return)
+ *
+ * @note this does not deinitialize the I2C bus; the owner of the bus must do
+ *       that after the Lcd2004 instance is deinitialized
+ *
+ * @return LCD2004_STATUS_OK if instance successfully deinitialized
+ */
+extern Lcd2004Status Lcd2004_Deinit(Lcd2004* pLcd);
+
+/**
  * @brief Send command to clear LCD screen
  * 
  * @param lcd   Lcd2004 instance
