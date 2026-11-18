@@ -66,7 +66,7 @@ endif
 endif
 
 # compiler flags
-C_FLAGS = -Wall -Wextra -O2 -g -Wno-unused-function
+C_FLAGS = -Wall -Wextra -O2 -g -Wno-unused-function -pthread
 ifeq ($(strip $(DEBUG_UART_LOOPBACK)),enable)
 C_FLAGS += -DDEBUG_UART_LOOPBACK
 endif
@@ -97,7 +97,7 @@ $(BUILD_DIR)/%.o: %.c
 $(TARGET): $(C_OBJLIST)
 	@echo ' '
 	@echo "linking target and map file..."
-	@$(CC) $(C_OBJLIST) -Wl,-Map=$(BUILD_DIR)/$(PROJECT).map -o $@
+	@$(CC) -pthread $(C_OBJLIST) -Wl,-Map=$(BUILD_DIR)/$(PROJECT).map -o $@
 	@echo 'Finished building target: $@'
 	@echo "Build debug symbols"
 	@$(OBJCOPY) --only-keep-debug $@ $@.debug

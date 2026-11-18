@@ -6,6 +6,8 @@
  * 
  */
 
+#define _GNU_SOURCE   // ppoll()
+#include <poll.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,6 +43,39 @@ static void Main_InstallSignalHandlers(void) {
 }
 
 /**
+  * @brief Sleep until there is something to do: UART data received, an I2C
+  *        transfer completed, an LCD timing delay expired, or a signal.
+  *
+  *        Tty_Process() drains the UART RX buffer completely on every pass,
+  *        so only the LCD can have work left over.
+  *
+  * @param sigmask   signal mask to use while sleeping (SIGINT/SIGTERM
+  *                  unblocked)
+  */
+static void Main_WaitForWork(const sigset_t* sigmask) {
+    int32_t wait_us = Lcd2004_GetWaitTimeUs(Lcd_GetInstance());
+
+    // fds of -1 (instance failed to init) are ignored by ppoll()
+    struct pollfd fds[] = {
+        { .fd = mHalUart_GetFd(Uart_GetInstance()),     .events = POLLIN },
+        { .fd = mHalI2c_GetEventFd(I2c_GetInstance()),  .events = POLLIN },
+    };
+
+    // wait_us < 0: no timeout, sleep until an fd is ready or a signal arrives
+    struct timespec timeout;
+    struct timespec* ptimeout = NULL;
+    if (wait_us >= 0) {
+        timeout.tv_sec  = wait_us / 1000000;
+        timeout.tv_nsec = (wait_us % 1000000) * 1000L;
+        ptimeout = &timeout;
+    }
+
+    // ppoll() is called even when wait_us == 0: it's the only point where
+    // SIGINT/SIGTERM are unblocked, so a busy loop must still pass through it
+    ppoll(fds, sizeof(fds) / sizeof(fds[0]), ptimeout, sigmask);
+}
+
+/**
   * @brief  The application entry point.
   * @retval int
   */
@@ -66,6 +101,15 @@ int main(void)
     };
     Tty_Init(&tty_config);
 
+    // Keep SIGINT/SIGTERM blocked except while sleeping in ppoll().  Without
+    // this, a Ctrl-C landing between the shutdown_requested check and the
+    // sleep would be missed, and the app would sleep until the next event.
+    sigset_t block_mask, wait_mask;
+    sigemptyset(&block_mask);
+    sigaddset(&block_mask, SIGINT);
+    sigaddset(&block_mask, SIGTERM);
+    sigprocmask(SIG_BLOCK, &block_mask, &wait_mask);  // wait_mask = previous mask
+
     while (!shutdown_requested)
     {
         // exercise state machines
@@ -80,6 +124,8 @@ int main(void)
         }
 
         Tty_Process();
+
+        Main_WaitForWork(&wait_mask);
     }
 
     // shut down in reverse order of creation: the LCD uses the I2C bus, so it
