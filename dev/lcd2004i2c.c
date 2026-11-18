@@ -502,7 +502,7 @@ int32_t Lcd2004_GetWaitTimeUs(Lcd2004 lcd) {
         case LCD2004_STATE_BUSY_WAIT:
             return Lcd2004_TimerRemainingUs(lcd, lcd->state_machine.wait_time_us);
         case LCD2004_STATE_BUSY:
-            // waiting on the I2C transfer; the I2C event fd wakes the caller
+            // waiting on the I2C transfer to complete (an external event)
             return -1;
         default:
             // INIT1-3, CLEAR, SEND, DONE, INIT_DONE, ERROR all advance on the
