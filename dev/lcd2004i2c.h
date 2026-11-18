@@ -96,4 +96,28 @@ extern Lcd2004Status Lcd2004_Write(Lcd2004 lcd, uint8_t* data, size_t data_len);
  */ 
 extern Lcd2004Status Lcd2004_StateMachine(Lcd2004 lcd);
 
+/**
+ * @brief How long the caller can sleep before Lcd2004_StateMachine() has more
+ *        work to do.  Call after Lcd2004_StateMachine().
+ *
+ * @param lcd   Lcd2004 instance
+ *
+ * @return  0 : work pending, call Lcd2004_StateMachine() again right away
+ *         >0 : microseconds until an LCD timing delay expires
+ *         -1 : nothing to do until an external event (new data from
+ *              Lcd2004_Write()/SetCursor()/ClearScreen(), or an I2C transfer
+ *              completing)
+ */
+extern int32_t Lcd2004_GetWaitTimeUs(Lcd2004 lcd);
+
+/**
+ * @brief Check whether the LCD is initialized and has finished all queued
+ *        work (nothing in flight, nothing queued).
+ *
+ * @param lcd   Lcd2004 instance
+ *
+ * @return true if idle and ready for more data
+ */
+extern bool Lcd2004_IsIdle(Lcd2004 lcd);
+
 #endif // __LCD2004_H__
